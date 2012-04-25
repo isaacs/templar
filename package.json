@@ -1,0 +1,14 @@
+{
+  "author": "Isaac Z. Schlueter <i@izs.me> (http://blog.izs.me/)",
+  "name": "templar",
+  "description": "A lightweight template thing",
+  "version": "0.0.0",
+  "repository": {
+    "url": "git://github.com/isaacs/templar.git"
+  },
+  "main": "templar.js",
+  "devDependencies": {
+    "ejs": "~0.7.1",
+    "tap": "~0.2.4"
+  }
+}
