@@ -7,6 +7,9 @@
     "url": "git://github.com/isaacs/templar.git"
   },
   "main": "templar.js",
+  "dependencies": {
+    "lru-cache": "~1.1.0"
+  },
   "devDependencies": {
     "ejs": "~0.7.1",
     "tap": "~0.2.4",
