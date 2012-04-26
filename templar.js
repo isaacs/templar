@@ -39,9 +39,9 @@ function Templar (req, res, opts) {
     fs.stat(f, function (er, st) {
       if (er) throw new Error('invalid template: '+f)
       var key = st.dev + ':' + st.ino
-      fs.readFile(f, 'utf8', function (er, data) {
+      fs.readFile(f, 'utf8', function (er, str) {
         if (er) throw new Error('invalid template: '+f)
-        compiled = engine.compile(data,
+        compiled = engine.compile(str,
           { filename: f, debug: opts.debug })
         compiled.key = key
         compileCache.set(f, compiled)
@@ -59,7 +59,7 @@ function Templar (req, res, opts) {
 
       // if we use the same file with the same data
       // repeatedly, then serve it up cached.
-      var finished = outputCache(tag) || compiled(data)
+      var finished = outputCache.get(tag) || compiled(data)
       outputCache.set(tag, finished)
       res.statusCode = code || 200
       var curCT = res.getHeader('content-type')
@@ -72,6 +72,6 @@ function Templar (req, res, opts) {
 function getETag (str) {
   var h = crypto.createHash("sha1")
   h.update(str)
-  return '"' + h.digest("hex") + '"'
+  return '"' + h.digest('base64') + '"'
 }
 
