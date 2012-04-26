@@ -9,6 +9,10 @@
   "main": "templar.js",
   "devDependencies": {
     "ejs": "~0.7.1",
-    "tap": "~0.2.4"
+    "tap": "~0.2.4",
+    "request": "~2.9.202"
+  },
+  "scripts": {
+    "test": "tap test"
   }
 }
