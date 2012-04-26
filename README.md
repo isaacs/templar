@@ -15,9 +15,14 @@ var ejs = require('ejs')
 , Templar = require('templar')
 , templarOptions = { engine: ejs, folder: './templates' }
 
-http.createServer(function (req, res) {
-  res.template = Templar(req, res, templarOptions)
+// preload it.  Otherwise, the first request is slow, because
+// it has to load up all the templates within it.
+Templar.loadFolder('./templates')
 
+http.createServer(function (req, res) {
+  // note that this causes a sync fs hit the first time if
+  // the folder has not been loaded yet.
+  res.template = Templar(req, res, templarOptions)
 
   // .. later, after figuring out which template to use ..
   res.template('foo.ejs', { some: 'data', for: [ 'the', 'template'] })
