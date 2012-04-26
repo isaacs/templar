@@ -30,6 +30,9 @@ var tap = require('tap')
       res.setHeader('content-type', 'text/plain')
       return res.template('bar.ejs', { headers: h })
 
+    case '/parts':
+      return res.template('full.ejs')
+
     default:
       res.statusCode = 404
       return res.end()
@@ -89,7 +92,7 @@ tap.test('/foo nocached', function (t) {
   req({ headers: { 'if-none-match': etag, 'x-foo': 'bar' }
       , url: '/foo' }, function (er, res, body) {
     t.equal(res.statusCode, 200)
-    t.ok(etag, 'has etag')
+    t.ok(res.headers.etag, 'has etag')
     t.equal(res.headers['content-type'], 'text/html')
     t.ok(res.headers.date)
     t.equal(res.headers.connection, 'keep-alive')
@@ -107,7 +110,7 @@ tap.test('/foo nocached', function (t) {
 tap.test('/404 page', function (t) {
   req('/404', function (er, res, body) {
     t.equal(res.statusCode, 404)
-    t.ok(etag, 'has etag')
+    t.ok(res.headers.etag, 'has etag')
     t.equal(res.headers['content-type'], 'text/html')
     t.ok(res.headers.date)
     t.equal(res.headers.connection, 'keep-alive')
@@ -122,12 +125,40 @@ tap.test('/404 page', function (t) {
 tap.test('/bar', function (t) {
   req('/bar', function (er, res, body) {
     t.equal(res.statusCode, 200)
-    t.ok(etag, 'has etag')
+    t.ok(res.headers.etag, 'has etag')
     t.equal(res.headers['content-type'], 'text/plain')
     t.ok(res.headers.date)
     t.equal(res.headers.connection, 'keep-alive')
     t.equal(res.headers['transfer-encoding'], 'chunked')
     t.equal(body, 'this is plain text.\n{"foo":"bar"}\n')
+    t.end()
+  })
+})
+
+tap.test('testing partials', function (t) {
+  req('/parts', function (er, res, body) {
+    t.equal(res.statusCode, 200)
+    t.ok(res.headers.etag, 'has etag')
+    t.equal(res.headers['content-type'], 'text/html')
+    t.ok(res.headers.date)
+    t.equal(res.headers.connection, 'keep-alive')
+    t.equal(res.headers['transfer-encoding'], 'chunked')
+    t.equal(body, '<!doctype html ALL UP IN YOUR FACE>\n'
+                + '<html>\n'
+                + '<head><title>yoyoyoyo</title>\n'
+                + '<body>\n'
+                + '<p>is for 1\n'
+                + '\n'
+                + '<p>is for 2\n'
+                + '\n'
+                + '<p>is for 3\n'
+                + '\n'
+                + '<p>is for 4\n'
+                + '\n'
+                + '<p>is for 5\n'
+                + '\n'
+                + '</body></html>\n')
+
     t.end()
   })
 })

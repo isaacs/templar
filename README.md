@@ -34,3 +34,58 @@ http.createServer(function (req, res) {
 * `engine`: The engine to use.  EJS and Jade both work.
 * `folder`: The folder where template files are found.
 * `debug`: Pass `debug` as an option to the engine.compile()
+
+## Partials
+
+Every template will be provided with a local function
+`include(file, data)`.  This function will include another template via
+a relative path, run it using the data provided, and return the string.
+
+Note that this does not automatically dump the data into the calling
+template!  It's still the caller's responsibility to actually print out
+the result.
+
+### Example
+
+If the template `full.ejs` contains this:
+
+```ejs
+<!doctype html ALL UP IN YOUR FACE>
+<html>
+<head><title>yoyoyoyo</title>
+<body>
+<%- include("partial.ejs", { partial: 1 }) %>
+<%- include("partial.ejs", { partial: 2 }) %>
+<%- include("partial.ejs", { partial: 3 }) %>
+<%- include("partial.ejs", { partial: 4 }) %>
+<%- include("partial.ejs", { partial: 5 }) %>
+</body></html>
+```
+
+Then, in the same folder, you had a `partial.ejs` that contained:
+
+```ejs
+<p>is for <%= partial %>
+```
+
+then the resulting output would be:
+
+```html
+<!doctype html ALL UP IN YOUR FACE>
+<html>
+<head><title>yoyoyoyo</title>
+<body>
+<p>is for 1
+
+<p>is for 2
+
+<p>is for 3
+
+<p>is for 4
+
+<p>is for 5
+
+</body></html>
+```
+
+Note that `full.ejs` actually prints out the result of the include call.

@@ -49,42 +49,76 @@ function Templar (req, res, opts) {
 
     if (!f) throw new Error('no template provided')
     f = path.resolve(folder, f)
+    if (!code) code = 200
+    if (!data || (typeof data !== 'object')) data = {}
 
-    // the data is part of the ETag
     var tpl = templateCache[f]
-
     if (!tpl) throw new Error('invalid template: '+f)
 
+    // the data is part of the ETag
     // serving the same template with the same data = same result
     var ins = util.inspect(data, true, Infinity, false)
     , tag = getETag(tpl.key + ":" + ins)
+
     if (req.headers['if-none-match'] === tag) {
       res.statusCode = 304
       return res.end()
     }
     res.setHeader('etag', tag)
 
-    // only generate if we have to
-    var finished = outputCache.get(tag)
-
-    if (!finished) {
-      // only compile if we have to.
-      var compiled = compileCache.get(f)
-      if (!compiled) {
-        compiled = engine.compile(
-          tpl.contents, { filename: f, debug: opts.debug })
-      }
-      if (!compiled) throw new Error('failed to compile template: '+f)
-
-      finished = compiled(data)
-      outputCache.set(tag, finished)
-    }
+    var out = output(f, data, tag)
 
     // ok, actually send a result.
     res.statusCode = code || 200
     var curCT = res.getHeader('content-type')
     if (!curCT) res.setHeader('content-type', 'text/html')
-    res.end(finished)
+    res.end(out)
+  }
+
+
+  function output (f, data, tag) {
+    // only generate if we have to
+    var out = outputCache.get(tag)
+    if (!out) {
+      // we're not actually going to provide THAT data object
+      // to the template, however.  Instead, we're going to make a copy,
+      // so that we can provide an 'include' function, which works just
+      // like require(), in that each template includes relative to
+      // itself
+      var tplData = {}
+
+      Object.keys(data).forEach(function (k) {
+        tplData[k] = data[k]
+      })
+      tplData.include = include(f, tag)
+
+      out = compile(f)(tplData)
+      outputCache.set(tag, out)
+    }
+
+    return out
+  }
+
+
+  // a partial's effective tag is the parent tag + f + data
+  function include (from, tag) { return function (f, data) {
+    var ins = util.inspect(data, true, Infinity, false)
+    , t = tag + f + ins
+    return output(path.resolve(path.dirname(from), f), data || {}, t)
+  }}
+
+
+  function compile (f) {
+    var tpl = templateCache[f]
+    // only compile if we have to.
+    var compiled = compileCache.get(f)
+    if (!compiled) {
+      compiled = engine.compile(
+        tpl.contents, { filename: f, debug: opts.debug })
+      compileCache.set(f, compiled)
+    }
+    if (!compiled) throw new Error('failed to compile template: '+f)
+    return compiled
   }
 }
 
