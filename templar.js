@@ -25,7 +25,6 @@ function Templar (req, res, opts) {
 
   folder = path.resolve(folder)
 
-
   // In order to support include() methods, we need to load up
   // all of the templates in the folder.  This has the other
   // somewhat nice effect of meaning that we don't have to do
@@ -35,7 +34,22 @@ function Templar (req, res, opts) {
   // folders where templates go, but that's pretty rare.
   if (!loaded[folder]) loadFolder(folder)
 
+  template.available = available
+  template.has = has
   return template
+
+  function has (f) {
+    f = path.resolve(folder, f)
+    return !!templateCache[f]
+  }
+
+  function available () {
+    return Object.keys(templateCache).filter(function (f) {
+      return f.indexOf(folder) === 0
+    }).map(function (f) {
+      return path.relative(folder, f)
+    })
+  }
 
   function template (f, data, code) {
     for (var i = 0; i < arguments.length; i ++) {
@@ -99,14 +113,12 @@ function Templar (req, res, opts) {
     return out
   }
 
-
   // a partial's effective tag is the parent tag + f + data
   function include (from, tag) { return function (f, data) {
     var ins = util.inspect(data, true, Infinity, false)
     , t = tag + f + ins
     return output(path.resolve(path.dirname(from), f), data || {}, t)
   }}
-
 
   function compile (f) {
     var tpl = templateCache[f]
