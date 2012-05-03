@@ -126,7 +126,7 @@ function Templar (req, res, opts) {
     var compiled = compileCache.get(f)
     if (!compiled) {
       compiled = engine.compile(
-        tpl.contents, { filename: f, debug: opts.debug })
+        tpl.contents, { filename: f })
       compileCache.set(f, compiled)
     }
     if (!compiled) throw new Error('failed to compile template: '+f)

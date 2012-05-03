@@ -33,7 +33,6 @@ http.createServer(function (req, res) {
 
 * `engine`: The engine to use.  EJS and Jade both work.
 * `folder`: The folder where template files are found.
-* `debug`: Pass `debug` as an option to the engine.compile()
 
 ## Partials
 
