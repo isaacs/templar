@@ -93,25 +93,25 @@ function Templar (req, res, opts) {
   function output (f, data, tag) {
     // only generate if we have to
     var out = outputCache.get(tag)
-    if (!out) {
-      // we're not actually going to provide THAT data object
-      // to the template, however.  Instead, we're going to make a copy,
-      // so that we can provide an 'include' function, which works just
-      // like require(), in that each template includes relative to
-      // itself
-      var tplData = {}
+    if (out) return out
 
-      Object.keys(data).forEach(function (k) {
-        tplData[k] = data[k]
-      })
-      tplData.include = include(f, tag)
+    // we're not actually going to provide THAT data object
+    // to the template, however.  Instead, we're going to make a copy,
+    // so that we can provide an 'include' function, which works just
+    // like require(), in that each template includes relative to
+    // itself
+    var tplData = {}
 
-      // include a link to 'locals' to see what we've been provided.
-      tplData.locals = tplData
+    Object.keys(data).forEach(function (k) {
+      tplData[k] = data[k]
+    })
+    tplData.include = include(f, tag)
 
-      out = compile(f)(tplData)
-      outputCache.set(tag, out)
-    }
+    // include a link to 'locals' to see what we've been provided.
+    tplData.locals = tplData
+
+    out = compile(f)(tplData)
+    outputCache.set(tag, out)
 
     return out
   }
