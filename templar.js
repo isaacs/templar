@@ -106,6 +106,9 @@ function Templar (req, res, opts) {
       })
       tplData.include = include(f, tag)
 
+      // include a link to 'locals' to see what we've been provided.
+      tplData.locals = tplData
+
       out = compile(f)(tplData)
       outputCache.set(tag, out)
     }
