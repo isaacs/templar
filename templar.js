@@ -18,6 +18,7 @@ function Templar (req, res, opts) {
 
   var folder = opts.folder
   , engine = opts.engine
+  , nocache = opts.cache === false
 
   if (!engine || !folder) {
     throw new Error('Templar needs engine and folder options')
@@ -74,7 +75,7 @@ function Templar (req, res, opts) {
     var ins = util.inspect(data, true, Infinity, false)
     , tag = getETag(tpl.key + ":" + ins)
 
-    if (req.headers['if-none-match'] === tag) {
+    if (!nocache && req.headers['if-none-match'] === tag) {
       res.statusCode = 304
       return res.end()
     }
