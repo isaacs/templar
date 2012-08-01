@@ -2,7 +2,6 @@ module.exports = Templar
 
 var path = require('path')
 , fs = require('fs')
-, util = require('util')
 , LRU = require('lru-cache')
 , compileCache = new LRU(50)
 , outputCache = new LRU(500)
@@ -72,7 +71,7 @@ function Templar (req, res, opts) {
 
     // the data is part of the ETag
     // serving the same template with the same data = same result
-    var ins = util.inspect(data)
+    var ins = oid(data)
     , tag = getETag(tpl.key + ":" + ins)
 
     if (!nocache && req.headers['if-none-match'] === tag) {
@@ -119,7 +118,7 @@ function Templar (req, res, opts) {
 
   // a partial's effective tag is the parent tag + f + data
   function include (from, tag) { return function (f, data) {
-    var ins = util.inspect(data)
+    var ins = oid(data)
     , t = tag + f + ins
     return output(path.resolve(path.dirname(from), f), data || {}, t)
   }}
@@ -166,5 +165,17 @@ function loadFolder_ (folder, c, depth, maxDepth) {
   })
   queue.forEach(function (folder) {
     loadFolder_(folder, c, depth + 1, maxDepth)
+  })
+}
+
+// This should be its own module, but I need to do more tests
+// and try to come up with something faster.
+function oid (obj) {
+  var seen = []
+  return JSON.stringify(obj, function (k, v) {
+    if (typeof v !== 'object' || !v) return v
+    if (seen.indexOf(v) !== -1) return undefined
+    seen.push(v)
+    return v
   })
 }
