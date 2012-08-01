@@ -72,7 +72,7 @@ function Templar (req, res, opts) {
 
     // the data is part of the ETag
     // serving the same template with the same data = same result
-    var ins = util.inspect(data, true, Infinity, false)
+    var ins = util.inspect(data)
     , tag = getETag(tpl.key + ":" + ins)
 
     if (!nocache && req.headers['if-none-match'] === tag) {
@@ -119,7 +119,7 @@ function Templar (req, res, opts) {
 
   // a partial's effective tag is the parent tag + f + data
   function include (from, tag) { return function (f, data) {
-    var ins = util.inspect(data, true, Infinity, false)
+    var ins = util.inspect(data)
     , t = tag + f + ins
     return output(path.resolve(path.dirname(from), f), data || {}, t)
   }}
