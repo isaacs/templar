@@ -174,11 +174,28 @@ function loadFolder_ (folder, c, depth, maxDepth) {
 // This should be its own module, but I need to do more tests
 // and try to come up with something faster.
 function oid (obj) {
+  var maxDepth = 10
   var seen = []
-  return JSON.stringify(obj, function (k, v) {
-    if (typeof v !== 'object' || !v) return v
-    if (seen.indexOf(v) !== -1) return undefined
+  var soFar = ''
+  function ch (v, depth) {
+    if (depth > maxDepth) return
+    if (typeof v === 'function' || typeof v === 'undefined') return
+    if (typeof v !== 'object' || !v) {
+      soFar += v
+      return
+    }
+    if (seen.indexOf(v) !== -1 || depth === maxDepth) return
     seen.push(v)
-    return v
-  })
+    soFar += '{'
+    Object.keys(v).forEach(function (k, _, __) {
+      // pseudo-private values.  skip those.
+      if (k.charAt(0) === '_') return
+      var to = typeof v[k]
+      if (to === 'function' || to === 'undefined') return
+      soFar += k
+      ch(v[k], depth + 1)
+    })
+  }
+  ch(obj, 0)
+  return soFar
 }
