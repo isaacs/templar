@@ -18,6 +18,7 @@ function Templar (req, res, opts) {
   var folder = opts.folder
   , engine = opts.engine
   , nocache = opts.cache === false
+  , stamp = opts.stamp
 
   if (!engine || !folder) {
     throw new Error('Templar needs engine and folder options')
@@ -79,7 +80,9 @@ function Templar (req, res, opts) {
       return res.end()
     }
     res.setHeader('etag', tag)
+    if (stamp) res.setHeader('x-templar-stamp', stamp)
 
+    data.stamp = stamp
     var out = output(f, data, tag)
 
     // ok, actually send a result.
