@@ -3,8 +3,8 @@ module.exports = Templar
 var path = require('path')
 , fs = require('fs')
 , LRU = require('lru-cache')
-, compileCache = new LRU(50)
-, outputCache = new LRU(500)
+, compileCache = new LRU({max:50})
+, outputCache = new LRU({max:500})
 , crypto = require('crypto')
 , templateCache = {}
 , loaded = {}
@@ -142,8 +142,7 @@ function Templar (req, res, opts) {
     // only compile if we have to.
     var compiled = compileCache.get(f)
     if (!compiled) {
-      compiled = engine.compile(
-        tpl.contents, { filename: f })
+      compiled = engine.compile(tpl.contents, { filename: f })
       compileCache.set(f, compiled)
     }
     if (!compiled) throw new Error('failed to compile template: '+f)
