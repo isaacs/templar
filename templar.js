@@ -38,6 +38,8 @@ function Templar (req, res, opts) {
 
   template.available = available
   template.has = has
+  template.locals = {}
+  template.locals.locals = template.locals
   return template
 
   function has (f) {
@@ -66,14 +68,19 @@ function Templar (req, res, opts) {
     if (!f) throw new Error('no template provided')
     f = path.resolve(folder, f)
     if (!code) code = 200
-    if (!data || (typeof data !== 'object')) data = {}
+    if (data && (typeof data === 'object')) {
+      Object.keys(data).forEach(function (k) {
+        template.locals[k] = data[k]
+      })
+      template.locals.locals = template.locals
+    }
 
     var tpl = templateCache[f]
     if (!tpl) throw new Error('invalid template: '+f)
 
     // the data is part of the ETag
     // serving the same template with the same data = same result
-    var ins = sigmund(data)
+    var ins = sigmund(template.locals)
     , tag = getETag(tpl.key + ":" + ins)
 
     if (!nocache && req.headers['if-none-match'] === tag) {
@@ -83,8 +90,11 @@ function Templar (req, res, opts) {
     res.setHeader('etag', tag)
     if (stamp) res.setHeader('x-templar-stamp', stamp)
 
-    data.stamp = stamp
-    var out = output(f, data, tag)
+    // stamp is applied *after* getting the etag, otherwise
+    // etags will be worker-specific which makes then much less
+    // likely to hit the browser cache.
+    template.locals.stamp = stamp
+    var out = output(f, template.locals, tag)
 
     // ok, actually send a result.
     res.statusCode = code || 200
