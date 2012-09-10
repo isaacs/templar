@@ -55,7 +55,8 @@ function Templar (req, res, opts) {
     })
   }
 
-  function template (f, data, code) {
+  function template () {
+    var f, data, code
     for (var i = 0; i < arguments.length; i ++) {
       switch (typeof arguments[i]) {
         case 'number': code = arguments[i]; break
