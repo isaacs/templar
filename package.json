@@ -2,7 +2,7 @@
   "author": "Isaac Z. Schlueter <i@izs.me> (http://blog.izs.me/)",
   "name": "templar",
   "description": "A lightweight template thing",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "repository": {
     "url": "git://github.com/isaacs/templar.git"
   },
