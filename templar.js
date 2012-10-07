@@ -108,7 +108,7 @@ function Templar (req, res, opts) {
   function output (f, data, tag) {
     // only generate if we have to
     var out = outputCache.get(tag)
-    if (out) return out
+    if (!nocache && out) return out
 
     // we're not actually going to provide THAT data object
     // to the template, however.  Instead, we're going to make a copy,
@@ -142,10 +142,16 @@ function Templar (req, res, opts) {
     var tpl = templateCache[f]
     // only compile if we have to.
     var compiled = compileCache.get(f)
-    if (!compiled) {
+
+    if (!compiled || nocache) {
+      if (nocache) {
+        tpl = loadFile_(f, fs.statSync(f))
+      }
+
       compiled = engine.compile(tpl.contents, { filename: f })
       compileCache.set(f, compiled)
     }
+
     if (!compiled) throw new Error('failed to compile template: '+f)
     return compiled
   }
@@ -173,11 +179,16 @@ function loadFolder_ (folder, c, depth, maxDepth) {
     var st = fs.statSync(file)
     if (!st) return
     if (st.isDirectory()) return queue.push(file)
-    st.contents = fs.readFileSync(file, 'utf8')
-    st.key = st.dev + ':' + st.ino
+    st = loadFile_(file, st)
     c[file] = st
   })
   queue.forEach(function (folder) {
     loadFolder_(folder, c, depth + 1, maxDepth)
   })
+}
+
+function loadFile_ (file, st) {
+  st.contents = fs.readFileSync(file, 'utf8')
+  st.key = st.dev + ':' + st.ino
+  return st
 }
