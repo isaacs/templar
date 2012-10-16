@@ -70,7 +70,7 @@ tap.test('/foo first', function (t) {
     t.equal(body, '<html>\n'
                 + '<body>\n'
                 + '<h1>This is the land of the FOO</h1>\n'
-                + '<pre>{"host":"localhost:' + PORT + '","content-length":"0","connection":"keep-alive"}</pre>\n'
+                + '<pre>{"host":"localhost:' + PORT + '","connection":"keep-alive"}</pre>\n'
                 + '</body>\n'
                 + '</html>\n')
     t.end()
@@ -90,7 +90,7 @@ tap.test('/foo cached', function (t) {
     t.equal(body, '<html>\n'
                 + '<body>\n'
                 + '<h1>This is the land of the cached FOO</h1>\n'
-                + '<pre>{"host":"localhost:' + PORT + '","content-length":"0","connection":"keep-alive"}</pre>\n'
+                + '<pre>{"host":"localhost:' + PORT + '","connection":"keep-alive"}</pre>\n'
                 + '</body>\n'
                 + '</html>\n')
 
@@ -116,7 +116,7 @@ tap.test('/foo nocached', function (t) {
     t.equal(body, '<html>\n'
                 + '<body>\n'
                 + '<h1>This is the land of the un-cached FOO</h1>\n'
-                + '<pre>{"x-foo":"bar","host":"localhost:' + PORT + '","content-length":"0","connection":"keep-alive"}</pre>\n'
+                + '<pre>{"x-foo":"bar","host":"localhost:' + PORT + '","connection":"keep-alive"}</pre>\n'
                 + '</body>\n'
                 + '</html>\n')
 

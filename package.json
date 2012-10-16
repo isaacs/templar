@@ -14,7 +14,7 @@
   "devDependencies": {
     "ejs": "~0.7.1",
     "tap": "~0.2.4",
-    "request": "~2.9.202"
+    "request": "~2.11"
   },
   "scripts": {
     "test": "tap test/*.js"
