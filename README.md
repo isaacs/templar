@@ -90,3 +90,10 @@ then the resulting output would be:
 ```
 
 Note that `full.ejs` actually prints out the result of the include call.
+
+## Other templating library support
+
+ - [Hogan][1] with [templar-hogan][2]
+
+  [1]: http://twitter.github.com/hogan.js/
+  [2]: https://github.com/Raynos/templar-hogan
