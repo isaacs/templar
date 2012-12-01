@@ -56,11 +56,13 @@ function Templar (req, res, opts) {
   }
 
   function template () {
-    var f, data, code
+    var f, data, code, endres
+    endres = true;
     for (var i = 0; i < arguments.length; i ++) {
       switch (typeof arguments[i]) {
         case 'number': code = arguments[i]; break
         case 'string': f = arguments[i]; break
+        case 'boolean' : endres = arguments[i]; break
         case 'object': data = arguments[i]; break
         default: throw new Error('bad argument to template')
       }
@@ -101,7 +103,10 @@ function Templar (req, res, opts) {
     res.statusCode = code || 200
     var curCT = res.getHeader('content-type')
     if (!curCT) res.setHeader('content-type', 'text/html')
-    res.end(out)
+    if(endres)
+      res.end(out)
+    else
+      res.write(out);
   }
 
 
