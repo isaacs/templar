@@ -35,6 +35,12 @@ var tap = require('tap')
       res.setHeader('content-type', 'text/plain')
       return res.template('bar.ejs', { headers: h })
 
+    case '/bar_no_end':
+      res.setHeader('content-type', 'text/plain')
+      res.template('bar.ejs', { headers: h }, false)
+      res.write('This is added after templar');
+      return res.end();
+
     case '/parts':
       return res.template('full.ejs')
 
@@ -179,6 +185,20 @@ tap.test('stamp', function (t) {
     t.equal(res.headers['transfer-encoding'], 'chunked')
     t.equal(res.headers['x-templar-stamp'], stamp)
     t.equal(body, 'stamp = ' + stamp + '\n')
+    t.end()
+  })
+})
+
+tap.test('/bar_no_end', function (t) {
+  req('/bar_no_end', function (er, res, body) {
+    /*Write more to res to make sure it's not ended*/
+    t.equal(res.statusCode, 200)
+    t.ok(res.headers.etag, 'has etag')
+    t.equal(res.headers['content-type'], 'text/plain')
+    t.ok(res.headers.date)
+    t.equal(res.headers.connection, 'keep-alive')
+    t.equal(res.headers['transfer-encoding'], 'chunked')
+    t.equal(body, 'this is plain text.\n{"foo":"bar"}\nThis is added after templar')
     t.end()
   })
 })
