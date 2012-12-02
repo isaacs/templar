@@ -28,6 +28,7 @@ http.createServer(function (req, res) {
   res.template('foo.ejs', { some: 'data', for: [ 'the', 'template'] })
   //alternatively, you can add a boolean parameter to write to the response without ending it
   //res.template('foo.ejs', { some: 'data', for: [ 'the', 'template'] }, false)
+  //just make sure you call res.end() on your own somewhere after that
 
 }).listen(PORT)
 ```
