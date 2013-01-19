@@ -189,6 +189,7 @@ function loadFolder_ (folder, c, depth, maxDepth) {
 
 function loadFile_ (file, st) {
   st.contents = fs.readFileSync(file, 'utf8')
-  st.key = st.dev + ':' + st.ino
+  st.key = process.platform === 'win32' ? path.resolve(file)
+         : (st.dev + ':' + st.ino)
   return st
 }
