@@ -8,7 +8,7 @@
   },
   "main": "templar.js",
   "dependencies": {
-    "lru-cache": "~2.0",
+    "lru-cache": "~2",
     "sigmund": "~1.0.0"
   },
   "devDependencies": {
