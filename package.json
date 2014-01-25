@@ -18,5 +18,6 @@
   },
   "scripts": {
     "test": "tap test/*.js"
-  }
+  },
+  "license": "ISC"
 }
