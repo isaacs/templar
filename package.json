@@ -8,13 +8,13 @@
   },
   "main": "templar.js",
   "dependencies": {
-    "lru-cache": "~2",
+    "lru-cache": "~4.0.1",
     "sigmund": "~1.0.0"
   },
   "devDependencies": {
-    "ejs": "~0.7.1",
-    "tap": "~0.2.4",
-    "request": "~2.11"
+    "ejs": "~2.5.1",
+    "tap": "~6.2.0",
+    "request": "~2.74.0"
   },
   "scripts": {
     "test": "tap test/*.js"
