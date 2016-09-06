@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "ejs": "~0.7.1",
-    "tap": "~0.2.4",
+    "tap": "~7.0.1",
     "request": "~2.11"
   },
   "scripts": {
